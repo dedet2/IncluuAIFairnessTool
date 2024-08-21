@@ -1,10 +1,8 @@
+# railway.toml
 [services]
-[services.backend]
-path = "backend"
-
-[services.backend.env]
-NODE_ENV = "production"
-
-[services.backend.build]
-build_command = "npm install"
-start_command = "node server.js"
+  [services.backend]
+  path = "backend"
+  start_command = "npm start"
+  build_command = "npm install"
+  [services.backend.env]
+    NODE_ENV = "production"
