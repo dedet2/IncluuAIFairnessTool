@@ -1,5 +1,10 @@
+[services]
 [services.backend]
-start = "cd backend && npm install && node server.js"
+path = "backend"
 
-[builds]
-backend = "cd backend && npm install"
+[services.backend.env]
+NODE_ENV = "production"
+
+[services.backend.build]
+build_command = "npm install"
+start_command = "node server.js"
