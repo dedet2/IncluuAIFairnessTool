@@ -1,0 +1,5 @@
+[services.backend]
+start = "cd backend && npm install && node server.js"
+
+[builds]
+backend = "cd backend && npm install"
