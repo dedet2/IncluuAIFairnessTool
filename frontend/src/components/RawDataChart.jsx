@@ -1,34 +1,50 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Card, Typography } from 'antd';
+import { Card, Typography, Alert } from 'antd';
 
 const { Paragraph } = Typography;
 
 const RawDataChart = ({ data, attributeName }) => {
+  console.log("RawDataChart - Data:", data);
+  console.log("RawDataChart - Attribute Name:", attributeName);
+  console.log("RawDataChart - Specific Data:", data[attributeName]);
+
   if (!data || !data[attributeName]) {
-    return <Paragraph>No raw data available for {attributeName}</Paragraph>;
+    return <Alert message={`No raw data available for ${attributeName}`} type="warning" />;
   }
 
   let chartData;
-  if (attributeName === 'Religion_reference') {
-    chartData = Object.entries(data['Religion'])
-      .filter(([religion]) => religion !== 'reference')
-      .map(([religion, counts]) => ({
-        name: religion,
+  try {
+    if (attributeName === 'Religion_reference') {
+      chartData = Object.entries(data['Religion'])
+        .filter(([religion]) => religion !== 'reference')
+        .map(([religion, counts]) => ({
+          name: religion,
+          ApprovalRate: (counts.approved / counts.total) * 100,
+          DenialRate: ((counts.total - counts.approved) / counts.total) * 100,
+          total: counts.total
+        }));
+    } else if (attributeName === 'SexualOrientation') {
+      chartData = Object.entries(data['SexualOrientation'] || {}).map(([orientation, counts]) => ({
+        name: orientation,
         ApprovalRate: (counts.approved / counts.total) * 100,
         DenialRate: ((counts.total - counts.approved) / counts.total) * 100,
         total: counts.total
       }));
-  } else {
-    chartData = Object.entries(data[attributeName]).map(([group, counts]) => ({
-      name: group,
-      ApprovalRate: (counts.approved / counts.total) * 100,
-      DenialRate: ((counts.total - counts.approved) / counts.total) * 100,
-      total: counts.total
-    }));
-  }
+    } else {
+      chartData = Object.entries(data[attributeName]).map(([group, counts]) => ({
+        name: group,
+        ApprovalRate: (counts.approved / counts.total) * 100,
+        DenialRate: ((counts.total - counts.approved) / counts.total) * 100,
+        total: counts.total
+      }));
+    }
 
-  chartData.sort((a, b) => b.total - a.total);
+    chartData.sort((a, b) => b.total - a.total);
+  } catch (error) {
+    console.error("Error processing chart data:", error);
+    return <Alert message={`Error processing data for ${attributeName}: ${error.message}`} type="error" />;
+  }
 
   const getGroupLabel = (group) => {
     const labels = {
@@ -52,8 +68,8 @@ const RawDataChart = ({ data, attributeName }) => {
           <BarChart
             data={chartData}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            barSize={50}  // Fixed bar size
-            maxBarSize={60}  // Maximum bar size
+            barSize={50}
+            maxBarSize={60}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
