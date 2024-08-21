@@ -1,0 +1,29 @@
+﻿Gender,Race,Age,Education,Pregnancy,Disability,Outcome
+Male,White,35,Master,No,No,Approved
+Male,White,28,Bachelor,No,No,Approved
+Male,White,32,PhD,No,No,Approved
+Male,White,45,Master,Yes,Yes,Denied
+Male,White,52,High School,No,No,Denied
+Male,Black,38,Bachelor,No,No,Denied
+Male,Black,47,High School,Yes,Yes,Denied
+Male,Black,29,PhD,No,No,Approved
+Male,Hispanic,33,Master,No,No,Approved
+Male,Hispanic,41,Bachelor,Yes,Yes,Denied
+Male,Hispanic,55,High School,No,No,Denied
+Male,Asian,37,PhD,No,No,Approved
+Male,Asian,49,High School,Yes,Yes,Denied
+Female,White,31,Master,No,No,Approved
+Female,White,43,High School,Yes,Yes,Denied
+Female,Black,51,Bachelor,No,No,Denied
+Female,Black,46,High School,Yes,Yes,Denied
+Female,Hispanic,58,High School,Yes,Yes,Denied
+Female,Asian,44,Bachelor,No,No,Denied
+Female,White,27,PhD,No,No,Approved
+Female,White,50,High School,Yes,Yes,Denied
+Female,Black,42,Bachelor,Yes,Yes,Denied
+Female,Black,39,High School,No,No,Denied
+Female,Hispanic,36,Master,No,No,Approved
+Female,Asian,48,Bachelor,Yes,Yes,Denied
+Male,White,30,PhD,No,No,Approved
+Male,White,34,Master,Yes,Yes,Denied
+Male,Black,53,High School,Yes,Yes,Denied

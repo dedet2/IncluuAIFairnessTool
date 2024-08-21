@@ -1,0 +1,24 @@
+{
+    "data": [
+      {
+        "UserID": 1,
+        "Gender": "Female",
+        "Race": "White",
+        "IncomeLevel": "Low",
+        "AgeGroup": "25-34",
+        "CreditScoreRange": "Good",
+        "LoanAmountRequested": "10K-50K",
+        "Outcome": "Approved"
+      },
+      {
+        "UserID": 2,
+        "Gender": "Male",
+        "Race": "Black",
+        "IncomeLevel": "Medium",
+        "AgeGroup": "35-44",
+        "CreditScoreRange": "Fair",
+        "LoanAmountRequested": "50K-100K",
+        "Outcome": "Denied"
+      }
+    ]
+  }

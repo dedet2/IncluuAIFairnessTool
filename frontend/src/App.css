@@ -1,0 +1,106 @@
+/* App.css */
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #333;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+label {
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+
+input[type="file"],
+input[type="text"] {
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+button {
+  background-color: #61dafb;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #21a1f1;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
+
+.bias-metrics {
+  margin-top: 20px;
+}
+
+.bias-metrics h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.bias-metrics p {
+  margin: 5px 0;
+  font-size: 1.1em;
+}
+
+.results-container {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.custom-tooltip .ant-tooltip-inner {
+  background-color: #ffffff !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  border: 1px solid #d9d9d9 !important;
+}
+.custom-tooltip .ant-tooltip-arrow-content {
+  background-color: #ffffff !important;
+}
