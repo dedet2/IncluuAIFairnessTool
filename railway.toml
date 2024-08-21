@@ -1,8 +1,25 @@
-# railway.toml
-[services]
-  [services.backend]
+[build]
+  builder = "nixpacks"
+
+[deploy]
+  startCommand = "npm run dev"
+
+[[services]]
+  name = "backend"
   path = "backend"
-  start_command = "npm start"
-  build_command = "npm install"
-  [services.backend.env]
-    NODE_ENV = "production"
+  [services.build]
+    buildCommand = "npm install"
+  [services.deploy]
+    startCommand = "npm start"
+    restartPolicyType = "on-failure"
+    restartPolicyMaxRetries = 10
+
+[[services]]
+  name = "frontend"
+  path = "frontend"
+  [services.build]
+    buildCommand = "npm install"
+  [services.deploy]
+    startCommand = "npm run dev"
+    restartPolicyType = "on-failure"
+    restartPolicyMaxRetries = 10
