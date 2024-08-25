@@ -6,6 +6,7 @@ const multer = require('multer');
 const { spawn } = require('child_process');
 const fs = require('fs');
 const csv = require('csv-parse');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -17,11 +18,17 @@ const upload = multer({ dest: 'uploads/' });
 // Mock user data (replace with your own database)
 const users = [];
 
-// JWT secret key
-const secretKey = 'your-secret-key';
+// JWT secret key from environment variable
+const secretKey = process.env.JWT_SECRET_KEY || 'fallback-secret-key';
 
-// Path to your Python3 executable
-const pythonPath = '/Library/Frameworks/Python.framework/Versions/3.12/bin/python3';
+// Path to Python executable
+const pythonPath = 'python3';
+
+// Check if Python scripts exist
+if (!fs.existsSync(path.join(__dirname, 'aif360_preprocessing.py')) || !fs.existsSync(path.join(__dirname, 'bias_detection.py'))) {
+  console.error('Python scripts not found');
+  process.exit(1);
+}
 
 // User registration endpoint
 app.post('/api/register', async (req, res) => {
@@ -68,7 +75,6 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   }
 
   const protectedAttributes = JSON.parse(req.body.protectedAttributes || '[]');
-  // Create a set of protected attributes with and without spaces
   const protectedAttributesSet = new Set([
     ...protectedAttributes,
     ...protectedAttributes.map(attr => attr.replace(' ', ''))
@@ -100,12 +106,8 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
       console.log("Reference Religion:", referenceReligion);
       console.log("Reference Sexual Orientation:", referenceSexualOrientation);
 
-      if (!fs.existsSync('aif360_preprocessing.py') || !fs.existsSync('bias_detection.py')) {
-        return res.status(500).json({ message: 'Python scripts not found' });
-      }
-
       const preprocessingProcess = spawn(pythonPath, [
-        'aif360_preprocessing.py',
+        path.join(__dirname, 'aif360_preprocessing.py'),
         JSON.stringify(parsedData),
         targetColumn,
         JSON.stringify(protectedAttributes),
@@ -159,7 +161,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
           ];
 
           const biasDetectionProcess = spawn(pythonPath, [
-            'bias_detection.py',
+            path.join(__dirname, 'bias_detection.py'),
             ...biasDetectionProcessArgs
           ]);
 
@@ -237,6 +239,12 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
       });
     });
   });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 // Start the server
