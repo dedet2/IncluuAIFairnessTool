@@ -19,6 +19,9 @@ const { TabPane } = Tabs;
 const ResultsPage = () => {
   const location = useLocation();
   const { biasMetrics, datasetType } = location.state || {};
+  if (!biasMetrics) {
+    return <div>Loading... (or No data available)</div>;
+  }
   const [isGlossaryVisible, setIsGlossaryVisible] = useState(false);
   const [runTutorial, setRunTutorial] = useState(true);
   const roundTo = (num, decimals = 3) => {
@@ -131,38 +134,40 @@ const ResultsPage = () => {
   };
 
   const renderMetric = (title, value, description, interpretation, privilegedGroup, unprivilegedGroup) => {
-  let displayValue = value;
-  let metric = title.toLowerCase().includes('parity') ? 'spd' : 'di';
-
-  if (typeof value === 'object' && value !== null) {
-    displayValue = value.value === null ? 'N/A' : roundTo(value.value);
-  } else if (value !== 'Unavailable' && value !== 'N/A') {
-    displayValue = roundTo(value);
-  }
-
-  const color = getColorForValue(displayValue, metric);
-
-  return (
-    <Card 
-      title={
-        <span>
-          {title}{' '}
-          <Tooltip title={description}>
-            <InfoCircleOutlined style={{ color: '#1890ff' }} />
-          </Tooltip>
-        </span>
-      } 
-      style={{ marginBottom: '16px' }}
-    >
-      <Paragraph>
-        <strong>Value:</strong> <Tag color={color}>{displayValue}</Tag>
-      </Paragraph>
-      <Paragraph>
-        <strong>Interpretation:</strong> {interpretation(displayValue, privilegedGroup, unprivilegedGroup)}
-      </Paragraph>
-    </Card>
-  );
-};
+    let displayValue = value;
+    let metric = title.toLowerCase().includes('parity') ? 'spd' : 'di';
+  
+    if (typeof value === 'object' && value !== null && value.value !== undefined) {
+      displayValue = value.value === null ? 'N/A' : roundTo(value.value);
+    } else if (value !== undefined && value !== null && value !== 'Unavailable' && value !== 'N/A') {
+      displayValue = roundTo(value);
+    } else {
+      displayValue = 'N/A';
+    }
+  
+    const color = getColorForValue(displayValue, metric);
+  
+    return (
+      <Card 
+        title={
+          <span>
+            {title}{' '}
+            <Tooltip title={description}>
+              <InfoCircleOutlined style={{ color: '#1890ff' }} />
+            </Tooltip>
+          </span>
+        } 
+        style={{ marginBottom: '16px' }}
+      >
+        <Paragraph>
+          <strong>Value:</strong> <Tag color={color}>{displayValue}</Tag>
+        </Paragraph>
+        <Paragraph>
+          <strong>Interpretation:</strong> {interpretation(displayValue, privilegedGroup, unprivilegedGroup)}
+        </Paragraph>
+      </Card>
+    );
+  };
 
 const renderBinaryMetrics = (metrics, attributeName) => {
   let privilegedGroup, unprivilegedGroup;
@@ -362,6 +367,10 @@ const renderBinaryMetrics = (metrics, attributeName) => {
   const renderMetricsForAttribute = (metrics, attributeName) => {
     console.log(`Rendering metrics for ${attributeName}:`, metrics);
   
+    if (!metrics) {
+      return <Text type="danger">No metrics available for {attributeName}</Text>;
+    }
+  
     return (
       <>
         {attributeName === 'Race' && renderRaceMetrics(metrics)}
@@ -369,17 +378,24 @@ const renderBinaryMetrics = (metrics, attributeName) => {
         {attributeName === 'Religion' && renderBinaryMetrics(metrics, 'Religion')}
         {attributeName === 'SexualOrientation' && renderBinaryMetrics(metrics, 'SexualOrientation')}
         {(attributeName !== 'Race' && attributeName !== 'Education' && attributeName !== 'Religion' && attributeName !== 'SexualOrientation') && renderBinaryMetrics(metrics, attributeName)}
-        {metrics.raw_data && metrics.raw_data[attributeName] && (
+        {metrics.raw_data && metrics.raw_data[attributeName] ? (
           <Card title={`Raw Data for ${attributeName}`} style={{ marginTop: '16px' }}>
             <RawDataChart data={metrics.raw_data} attributeName={attributeName} />
           </Card>
+        ) : (
+          <Text type="secondary">No raw data available for {attributeName}</Text>
         )}
       </>
     );
   };
     
     
-  const renderOverviewTab = (data) => (
+  const renderOverviewTab = (data) => {
+    if (!data) {
+      return <Text type="danger">No data available</Text>;
+    }
+  
+    return (
     <>
       <SummarySection biasMetrics={data} />
       <Card title="Bias Metrics Visualization" style={{ marginBottom: '16px' }}>
@@ -413,9 +429,9 @@ const renderBinaryMetrics = (metrics, attributeName) => {
         </TabPane>
         <TabPane tab="Detailed Metrics" key="detailed">
   <Tabs>
-    {Object.entries(biasMetrics.original)
-      .filter(([attr]) => attr !== 'outcome_rates' && attr !== 'raw_data')
-      .map(([attr, metrics]) => {
+  {Object.entries(biasMetrics?.original || {})
+  .filter(([attr]) => attr !== 'outcome_rates' && attr !== 'raw_data')
+  .map(([attr, metrics]) => {
         const displayAttr = attr === 'Religion_reference' ? 'Religion' : 
                             attr === 'SexualOrientation' ? 'Sexual Orientation' : attr;
         return (
@@ -444,9 +460,11 @@ const renderBinaryMetrics = (metrics, attributeName) => {
     </div>
   );
   const renderMetricsOrError = (data) => {
-    if (data.error) {
-      return <Text type="danger">{data.error}</Text>;
+    if (!data || data.error) {
+      return <Text type="danger">{data?.error || 'No data available'}</Text>;
     }
+    return renderOverviewTab(data);
+  };s
     return (
       <Tabs defaultActiveKey="overview">
   <TabPane tab="Overview" key="overview">
@@ -497,14 +515,39 @@ const renderBinaryMetrics = (metrics, attributeName) => {
           <Tabs>
             {Object.entries(biasMetrics.original)
               .filter(([attr]) => attr !== 'outcome_rates' && attr !== 'raw_data')
-              .map(([attr, metrics]) => (
-                <TabPane tab={attr} key={attr}>
-                  {renderMetricsForAttribute(metrics, attr)}
-                </TabPane>
-              ))}
+              .map(([attr, metrics]) => {
+                const displayAttr = attr === 'Religion_reference' ? 'Religion' : 
+                                    attr === 'SexualOrientation' ? 'Sexual Orientation' : attr;
+                return (
+                  <TabPane tab={displayAttr} key={attr}>
+                    {renderMetricsForAttribute({...metrics, raw_data: biasMetrics.original.raw_data}, displayAttr)}
+                  </TabPane>
+                );
+              })}
           </Tabs>
         </TabPane>
+        {datasetType === 'training' && biasMetrics.reweighed && Object.keys(biasMetrics.reweighed).length > 0 && (
+          <TabPane tab="Reweighed Data" key="reweighed">
+            {biasMetrics.reweighed.error ? (
+              <Typography.Text type="danger">Error processing reweighed data: {biasMetrics.reweighed.error}</Typography.Text>
+            ) : (
+              renderOverviewTab(biasMetrics.reweighed)
+            )}
+          </TabPane>
+        )}
       </Tabs>
+      <FloatingGlossaryButton onClick={toggleGlossary} />
+      <GlossaryModal 
+        visible={isGlossaryVisible} 
+        onClose={() => setIsGlossaryVisible(false)} 
+      />
+      <Joyride
+        steps={steps}
+        run={runTutorial}
+        continuous={true}
+        showSkipButton={true}
+        callback={handleJoyrideCallback}
+      />
     </div>
   );
 };

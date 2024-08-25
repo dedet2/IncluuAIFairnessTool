@@ -123,6 +123,7 @@ const DataUploadPage = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       const biasMetrics = response.data.biasMetrics;
+      console.log('Bias metrics received:', biasMetrics); // Add this log
       setErrorMessage('');
       navigate('/results', { state: { biasMetrics, datasetType, referenceReligion, referenceSexualOrientation } });
     } catch (error) {
