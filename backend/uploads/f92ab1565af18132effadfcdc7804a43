@@ -1,0 +1,29 @@
+﻿Gender,Race,Age,Education,Outcome
+Male,White,35,Master,Approved
+Male,White,28,Bachelor,Approved
+Male,White,32,PhD,Approved
+Male,White,45,Master,Approved
+Male,White,52,High School,Denied
+Male,Black,38,Bachelor,Denied
+Male,Black,47,High School,Denied
+Male,Black,29,PhD,Approved
+Male,Hispanic,33,Master,Approved
+Male,Hispanic,41,Bachelor,Approved
+Male,Hispanic,55,High School,Denied
+Male,Asian,37,PhD,Approved
+Male,Asian,49,High School,Denied
+Female,White,31,Master,Approved
+Female,White,43,High School,Denied
+Female,Black,51,Bachelor,Denied
+Female,Black,46,High School,Denied
+Female,Hispanic,58,High School,Denied
+Female,Asian,44,Bachelor,Denied
+Female,White,27,PhD,Approved
+Female,White,50,High School,Denied
+Female,Black,42,Bachelor,Denied
+Female,Black,39,High School,Denied
+Female,Hispanic,36,Master,Approved
+Female,Asian,48,Bachelor,Denied
+Male,White,30,PhD,Approved
+Male,White,34,Master,Approved
+Male,Black,53,High School,Denied
