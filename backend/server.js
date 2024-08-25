@@ -240,7 +240,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 });
 
 // Start the server
-const port = 5003;
+const port = process.env.PORT || 5003;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
