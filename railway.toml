@@ -1,25 +1,10 @@
 [build]
-  builder = "nixpacks"
+builder = "nixpacks"
 
 [deploy]
-  startCommand = "npm run dev"
+startCommand = "npm start"
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 10
 
-[[services]]
-  name = "backend"
-  path = "backend"
-  [services.build]
-    buildCommand = "npm install"
-  [services.deploy]
-    startCommand = "npm start"
-    restartPolicyType = "on-failure"
-    restartPolicyMaxRetries = 10
-
-[[services]]
-  name = "frontend"
-  path = "frontend"
-  [services.build]
-    buildCommand = "npm install"
-  [services.deploy]
-    startCommand = "npm run dev"
-    restartPolicyType = "on-failure"
-    restartPolicyMaxRetries = 10
+[env]
+NODE_ENV = "production"
