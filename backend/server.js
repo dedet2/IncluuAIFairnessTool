@@ -9,8 +9,12 @@ const csv = require('csv-parse');
 const path = require('path');
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'https://aifairnessstoolfrontend-production.up.railway.app',
+  credentials: true,
+}));
 
 // Configure multer for file upload
 const upload = multer({ dest: 'uploads/' });
