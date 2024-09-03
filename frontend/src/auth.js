@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-const API_BASE_URL = 'http://localhost:5001'; // Update with your backend API URL
-
+const API_BASE_URL = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5001';
 const register = async (email, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/api/register`, {

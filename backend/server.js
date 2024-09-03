@@ -12,7 +12,10 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://aifairnessstoolfrontend-production.up.railway.app',
+  origin: [
+    'https://aifairnessstoolfrontend-production.up.railway.app',
+    'http://localhost:3000'
+  ],
   credentials: true,
 }));
 
