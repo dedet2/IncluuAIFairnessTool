@@ -13,7 +13,7 @@ const app = express();
 // Define allowedOrigins
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  'https://aifairnessstoolfrontend-production.up.railway.app',
+  'https://aifairnesstoolfrontend-production.up.railway.app',
   'http://localhost:3000'
 ].filter(Boolean);
 
