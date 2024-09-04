@@ -10,12 +10,23 @@ const path = require('path');
 
 const app = express();
 
+// Define allowedOrigins
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'https://aifairnessstoolfrontend-production.up.railway.app',
+  'http://localhost:3000'
+].filter(Boolean);
+
 // CORS configuration
 app.use(cors({
-  origin: [
-    'https://aifairnessstoolfrontend-production.up.railway.app',
-    'http://localhost:3000'
-  ],
+  origin: function(origin, callback) {
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true,
 }));
 
@@ -26,8 +37,11 @@ const upload = multer({ dest: 'uploads/' });
 const users = [];
 
 // JWT secret key from environment variable
-const secretKey = process.env.JWT_SECRET_KEY || 'fallback-secret-key';
-
+const secretKey = process.env.JWT_SECRET_KEY;
+if (!secretKey) {
+  console.error('JWT_SECRET_KEY is not set in environment variables');
+  process.exit(1);
+}
 // Path to Python executable
 const pythonPath = 'python3';
 
@@ -67,7 +81,7 @@ app.post('/api/login', async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    const token = jwt.sign({ email }, secretKey);
+    const token = jwt.sign({ userId: user.email }, secretKey, { expiresIn: '1h' });
     res.json({ token, message: 'Login successful' });
   } catch (error) {
     console.error('Login error:', error);
@@ -248,10 +262,32 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   });
 });
 
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (token == null) return res.sendStatus(401);
+  
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+// Protected route example
+app.get('/api/protected', authenticateToken, (req, res) => {
+  res.json({ message: 'This is a protected route', userId: req.user.userId });
+});
+
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
+  console.error(`${new Date().toISOString()} - Error:`, err);
+  res.status(500).json({ 
+    message: 'Internal server error', 
+    error: process.env.NODE_ENV === 'production' ? 'An unexpected error occurred' : err.message 
+  });
 });
 
 // Start the server
