@@ -37,10 +37,13 @@ const upload = multer({ dest: 'uploads/' });
 const users = [];
 
 // JWT secret key from environment variable
-const secretKey = process.env.JWT_SECRET_KEY;
-if (!secretKey) {
-  console.error('JWT_SECRET_KEY is not set in environment variables');
+const secretKey = process.env.JWT_SECRET_KEY || 'local_development_secret';
+
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET_KEY) {
+  console.error('JWT_SECRET_KEY is not set in production environment variables');
   process.exit(1);
+} else if (!process.env.JWT_SECRET_KEY) {
+  console.warn('Warning: JWT_SECRET_KEY is not set. Using insecure default for local development. Do not use this in production!');
 }
 // Path to Python executable
 const pythonPath = 'python3';
